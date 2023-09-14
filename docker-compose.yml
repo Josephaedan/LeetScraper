@@ -5,6 +5,8 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
     healthcheck:
       test: ["CMD", "mongostat", "-n", "1", "--quiet"]
       interval: 30s
@@ -26,3 +28,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+volumes:
+  mongo-data:

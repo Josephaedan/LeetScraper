@@ -12,5 +12,7 @@ COPY . .
 # Make the entrypoint script executable
 RUN chmod +x entrypoint.sh
 
+EXPOSE 8000
+
 # Set the entrypoint script as the entrypoint for the container
 ENTRYPOINT ["./entrypoint.sh"]

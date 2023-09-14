@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pymongo import MongoClient
 from fastapi.responses import RedirectResponse
@@ -34,14 +35,38 @@ collection = db['problems']
 async def root():
     return RedirectResponse(url="/docs")
 
-@app.get("/questions/")
+@app.get("/questions")
+async def get_questions(
+    difficulty: Optional[str] = None,
+    topic: Optional[str] = None,
+    language: Optional[str] = None
+):
+    # Create a filter based on the provided query parameters.
+    query_filter = {
+        "paid_only": False
+    }
+    
+    if difficulty:
+        query_filter["difficulty"] = difficulty
+    if topic:
+        query_filter["topic_tags"] = topic
+    if language:
+        query_filter["languages"] = language
+
+    # Fetch data from MongoDB based on the filter
+    cursor = collection.find(query_filter, {"_id": 0, "id": 1, "title": 1, "description": 1})
+    questions = list(cursor)
+
+    return questions
+
+@app.get("/questions/all")
 async def get_all_questions():
     questions = list(collection.find({}))
     for question in questions:
         question["_id"] = str(question["_id"])  # Convert ObjectID to string
     return {"questions": questions}
 
-@app.get("/questions/{question_id}")
+@app.get("/question/{question_id}")
 async def get_one_question(question_id: str):
     question = collection.find_one({"id": question_id})
     if question:

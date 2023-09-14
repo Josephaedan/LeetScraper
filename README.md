@@ -29,8 +29,6 @@ The project can be configured using environment variables in a `.env` file in th
 
 - `MONGO_HOST`: The host for the MongoDB instance. Default is `localhost`.
 - `MONGO_PORT`: The port for the MongoDB instance. Default is `27017`.
-- `QUESTION_ID_START`: The starting ID for scraping LeetCode questions. Default is `1`.
-- `QUESTION_ID_END`: The ending ID for scraping LeetCode questions. Default is `50`.
 
 A sample file `.env.example` has been provided for you. Copy the `.env.example` file to a new file named `.env`:
 
