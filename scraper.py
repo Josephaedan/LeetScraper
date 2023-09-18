@@ -10,6 +10,7 @@ import os
 load_dotenv()
 MONGO_HOST = os.environ.get('MONGO_HOST', 'localhost')
 MONGO_PORT = os.environ.get('MONGO_PORT', '27017')
+DAILY_LIMIT = int(os.environ.get('DAILY_LIMIT', '500'))
 
 def parse_questions_xml():
     """Parse the Leetcode questions sitemap XML file and return a list of all question URLs."""
@@ -30,12 +31,12 @@ def get_questions_to_scrape(urls):
     collection = db['problems']
 
     # Get all existing question URLs
-    existing_urls = [{question["url"]: question["updated_at"]} for question in collection.find({}, {"url": 1, "updated_at": 1, "_id": False})]
+    existing_urls = {question["url"]: question["updated_at"] for question in collection.find({}, {"url": 1, "updated_at": 1, "_id": False})}
 
     # Get all question URLs that have not been scraped yet, or have been updated more than 7 days ago. Set an upper limit of 500 questions to scrape per day.
     urls_to_scrape = []
     for url in urls:
-        if len(urls_to_scrape) >= 500:
+        if len(urls_to_scrape) >= DAILY_LIMIT:
             break
         if url not in existing_urls or (url in existing_urls and int(time.time()) - existing_urls[url] > 604800):
             urls_to_scrape.append(url)
@@ -83,7 +84,7 @@ def get_details_from_queries(queries: list[dict]):
     # Extract question details from the first query
     data = queries[0].get("state", {}).get("data", {}).get("question", {})
     question_details["title"] = data.get("title", "")
-    question_details["url"] = f"https://leetcode.com/problems/{data.get('titleSlug', '')}"
+    question_details["url"] = f"https://leetcode.com/problems/{data.get('titleSlug', '')}/"
     question_details["difficulty"] = data.get("difficulty", "")
     question_details["id"] = data.get("questionId", "")
     question_details["paid_only"] = data.get("isPaidOnly", "")

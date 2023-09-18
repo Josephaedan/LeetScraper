@@ -6,10 +6,12 @@ from pymongo import MongoClient
 load_dotenv()
 
 def wait_for_mongodb():
-    mongo_host = os.environ.get("MONGO_HOST", "mongodb")
-    mongo_port = os.environ.get("MONGO_PORT", 27017)
-    print(f"Attempting to connect to MongoDB at {mongo_host}:{mongo_port}...")
-    client = MongoClient(host=mongo_host, port=int(mongo_port))
+    MONGO_HOST = os.environ.get("MONGO_HOST", "mongodb")
+    MONGO_PORT = os.environ.get("MONGO_PORT", 27017)
+    db_url = f"mongodb://{MONGO_HOST}:{MONGO_PORT}/"
+    print(f"Attempting to connect to MongoDB at {db_url}...")
+    
+    client = MongoClient(db_url)
     
     while True:
         try:
